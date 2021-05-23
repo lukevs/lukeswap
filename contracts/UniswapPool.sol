@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./UniswapLPToken.sol";
+
 // import "./Math.sol";
 
 contract UniswapPool {
@@ -14,20 +15,15 @@ contract UniswapPool {
     IERC20Metadata private secondToken;
     UniswapLPToken public lpToken;
 
-    constructor(
-        address firstTokenAddress,
-        address secondTokenAddress
-    ) {
+    constructor(address firstTokenAddress, address secondTokenAddress) {
         firstToken = IERC20Metadata(firstTokenAddress);
         secondToken = IERC20Metadata(secondTokenAddress);
         lpToken = _createLPToken(firstTokenAddress, secondTokenAddress);
     }
 
-    function _createLPToken(
-        address firstTokenAddress,
-        address secondTokenAddress
-    ) internal returns (UniswapLPToken) {
-        string memory name = string(abi.encodePacked("Uniswap ", firstToken.name(), " + ", secondToken.name(), " LP Token"));
+    function _createLPToken(address firstTokenAddress, address secondTokenAddress) internal returns (UniswapLPToken) {
+        string memory name =
+            string(abi.encodePacked("Uniswap ", firstToken.name(), " + ", secondToken.name(), " LP Token"));
         string memory symbol = string(abi.encodePacked("uni", firstToken.symbol(), "+", secondToken.symbol()));
         return new UniswapLPToken(name, symbol, firstTokenAddress, secondTokenAddress);
     }
