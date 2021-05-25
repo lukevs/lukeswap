@@ -3,8 +3,20 @@ import { Artifact } from "hardhat/types";
 import { expect } from "chai";
 
 import { UniswapPool } from "../typechain/UniswapPool";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { TestToken } from "../typechain";
 
 const { deployContract } = hre.waffle;
+
+async function mintTokenTo(admin: SignerWithAddress, token: TestToken, to: SignerWithAddress, amount: number) {
+  await token.connect(admin).mint(to.address, amount);
+}
+
+async function approveAndDeposit(from: SignerWithAddress, pool: UniswapPool, firstToken: TestToken, firstTokenAmount: number, secondToken: TestToken, secondTokenAmount: number) {
+  await firstToken.connect(from).approve(pool.address, firstTokenAmount);
+  await secondToken.connect(from).approve(pool.address, secondTokenAmount);
+  await pool.connect(from).addLiquidity(firstTokenAmount, secondTokenAmount);
+}
 
 export function shouldBehaveLikeUniswapPool(): void {
   describe("UniswapPool", function () {
@@ -26,20 +38,17 @@ export function shouldBehaveLikeUniswapPool(): void {
       expect(await this.lpToken.owner()).to.equal(this.pool.address);
     });
 
-    it("should exchange liquidity for LP tokens", async function () {
+    it("should exchange liquidity for all LP tokens if no LP tokens", async function () {
       const aliceASupply = 100;
       const aliceBSupply = 200;
+
+      await mintTokenTo(this.signers.admin, this.tokenA, this.signers.alice, aliceASupply);
+      await mintTokenTo(this.signers.admin, this.tokenB, this.signers.alice, aliceBSupply);
 
       const aliceADeposit = 10;
       const aliceBDeposit = 40;
 
-      await this.tokenA.connect(this.signers.admin).mint(this.signers.alice.address, aliceASupply);
-      await this.tokenB.connect(this.signers.admin).mint(this.signers.alice.address, aliceBSupply);
-
-      await this.tokenA.connect(this.signers.alice).approve(this.pool.address, aliceADeposit);
-      await this.tokenB.connect(this.signers.alice).approve(this.pool.address, aliceBDeposit);
-
-      await this.pool.connect(this.signers.alice).addLiquidity(aliceADeposit, aliceBDeposit);
+      await approveAndDeposit(this.signers.alice, this.pool, this.tokenA, aliceADeposit, this.tokenB, aliceBDeposit);
 
       const expectedLPTokenSupply = Math.sqrt(aliceADeposit * aliceBDeposit);
       expect(await this.lpToken.totalSupply()).to.equal(expectedLPTokenSupply);
