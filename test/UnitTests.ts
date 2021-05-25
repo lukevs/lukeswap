@@ -16,7 +16,7 @@ describe("Unit tests", function () {
 
     const signers: SignerWithAddress[] = await hre.ethers.getSigners();
     this.signers.admin = signers[0];
-    this.signers.anne = signers[1];
+    this.signers.alice = signers[1];
     this.signers.bob = signers[2];
 
     const testTokenArtifact: Artifact = await hre.artifacts.readArtifact("TestToken");

@@ -18,28 +18,28 @@ export function shouldBehaveLikeUniswapLPToken(): void {
     });
 
     it("should allow owner to mint", async function () {
-      const anneMintSupply: number = 100;
+      const aliceMintSupply: number = 100;
       const bobMintSupply: number = 50;
 
       expect(await this.lpToken.totalSupply()).to.equal(0);
 
-      await this.lpToken.connect(this.signers.admin).mint(this.signers.anne.address, anneMintSupply);
+      await this.lpToken.connect(this.signers.admin).mint(this.signers.alice.address, aliceMintSupply);
       await this.lpToken.connect(this.signers.admin).mint(this.signers.bob.address, bobMintSupply);
 
-      expect(await this.lpToken.connect(this.signers.admin).totalSupply()).to.equal(anneMintSupply + bobMintSupply);
-      expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.anne.address)).to.equal(anneMintSupply);
+      expect(await this.lpToken.connect(this.signers.admin).totalSupply()).to.equal(aliceMintSupply + bobMintSupply);
+      expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.alice.address)).to.equal(aliceMintSupply);
       expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.bob.address)).to.equal(bobMintSupply);
     });
 
     it("should allow owner to burn", async function () {
-      const anneMintSupply: number = 100;
-      const anneBurnSupply: number = 60;
+      const aliceMintSupply: number = 100;
+      const aliceBurnSupply: number = 60;
 
-      await this.lpToken.connect(this.signers.admin).mint(this.signers.anne.address, anneMintSupply);
-      expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.anne.address)).to.equal(anneMintSupply);
+      await this.lpToken.connect(this.signers.admin).mint(this.signers.alice.address, aliceMintSupply);
+      expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.alice.address)).to.equal(aliceMintSupply);
 
-      await this.lpToken.connect(this.signers.admin).burn(this.signers.anne.address, anneBurnSupply);
-      expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.anne.address)).to.equal(anneMintSupply - anneBurnSupply);
+      await this.lpToken.connect(this.signers.admin).burn(this.signers.alice.address, aliceBurnSupply);
+      expect(await this.lpToken.connect(this.signers.admin).balanceOf(this.signers.alice.address)).to.equal(aliceMintSupply - aliceBurnSupply);
     });
   });
 };
