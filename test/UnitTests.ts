@@ -18,7 +18,9 @@ describe("Unit tests", function () {
     this.signers.admin = signers[0];
     this.signers.alice = signers[1];
     this.signers.bob = signers[2];
+  });
 
+  beforeEach(async function () {
     const testTokenArtifact: Artifact = await hre.artifacts.readArtifact("TestToken");
     this.tokenA = <TestToken>await deployContract(this.signers.admin, testTokenArtifact, ["TokenA", "TA"]);
     this.tokenB = <TestToken>await deployContract(this.signers.admin, testTokenArtifact, ["TokenB", "TB"]);

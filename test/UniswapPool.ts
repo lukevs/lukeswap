@@ -99,5 +99,30 @@ export function shouldBehaveLikeUniswapPool(): void {
       expect(await this.lpToken.balanceOf(this.signers.bob.address)).to.equal(expectedBobLPTokens);
       expect(await this.lpToken.totalSupply()).to.equal(expectedLPTokenSupply);
     });
+
+    it("should withdraw all tokens for LP that owns all tokens", async function () {
+      expect(await this.tokenA.totalSupply()).to.equal(0);
+      expect(await this.tokenB.totalSupply()).to.equal(0);
+
+      const aliceASupply = 100;
+      const aliceBSupply = 200;
+
+      await mintTokenTo(this.signers.admin, this.tokenA, this.signers.alice, aliceASupply);
+      await mintTokenTo(this.signers.admin, this.tokenB, this.signers.alice, aliceBSupply);
+
+      const aliceADeposit = 10;
+      const aliceBDeposit = 40;
+
+      await approveAndDeposit(this.signers.alice, this.pool, this.tokenA, aliceADeposit, this.tokenB, aliceBDeposit);
+      expect(await this.tokenA.balanceOf(this.signers.alice.address)).to.equal(aliceASupply - aliceADeposit);
+      expect(await this.tokenB.balanceOf(this.signers.alice.address)).to.equal(aliceBSupply - aliceBDeposit);
+
+      const aliceLPTokenBalance = await this.lpToken.balanceOf(this.signers.alice.address);
+      await this.pool.connect(this.signers.alice).removeLiquidity(aliceLPTokenBalance);
+
+      expect(await this.lpToken.totalSupply()).to.equal(0);
+      expect(await this.tokenA.balanceOf(this.signers.alice.address)).to.equal(aliceASupply);
+      expect(await this.tokenB.balanceOf(this.signers.alice.address)).to.equal(aliceBSupply);
+    });
   });
 };
