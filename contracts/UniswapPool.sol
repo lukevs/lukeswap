@@ -74,7 +74,9 @@ contract UniswapPool {
             uint256 secondTokenAmountAddedAsFirstToken = secondTokenAmount.mul(totalFirstTokenInPool).div(totalSecondTokenInPool);
             uint256 totalValueAddedAsFirstToken = firstTokenAmount.add(secondTokenAmountAddedAsFirstToken);
 
-            return lpTokenSupply.div((totalValueInPoolAsFirstToken.div(totalValueAddedAsFirstToken)).sub(1));
+            uint256 totalFutureSupply = lpTokenSupply.mul(totalValueInPoolAsFirstToken).div((totalValueInPoolAsFirstToken.sub(totalValueAddedAsFirstToken)));
+            uint256 total = totalFutureSupply - lpTokenSupply;
+            return total;
         }
     }
 
