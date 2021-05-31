@@ -1,6 +1,6 @@
 # Lukeswap
 
-Uniswap-v1-esque exchange built to learn solidity
+Uniswap-v2-esque exchange built to learn solidity
 
 ## Usage
 
